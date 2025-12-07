@@ -945,8 +945,8 @@ def flag_document_for_protection(analysis_result: dict) -> dict:
 # =============================================================================
 
 def analyze_signals(
-    positive_signals: list,
-    negative_signals: list,
+    positive_signals: str,
+    negative_signals: str,
     context: str
 ) -> dict:
     """Analyzes conflicting signals and provides visible reasoning for decisions.
@@ -955,18 +955,22 @@ def analyze_signals(
     Use this to demonstrate intelligent analysis to judges.
 
     Args:
-        positive_signals: List of factors suggesting legitimacy (e.g., ["Has official branding", "Small amount"])
-        negative_signals: List of risk factors (e.g., ["No RBI registration", "Processing fee requested"])
+        positive_signals: Comma-separated factors suggesting legitimacy (e.g., "Has official branding, Small amount, Known recipient")
+        negative_signals: Comma-separated risk factors (e.g., "No RBI registration, Processing fee requested, Unknown number")
         context: Brief context of the situation being analyzed
 
     Returns:
         dict: Signal analysis with reasoning, conflict detection, and final judgment
     """
-    has_conflict = len(positive_signals) > 0 and len(negative_signals) > 0
+    # Parse comma-separated strings into lists
+    positive_list = [s.strip() for s in positive_signals.split(",") if s.strip()] if positive_signals else []
+    negative_list = [s.strip() for s in negative_signals.split(",") if s.strip()] if negative_signals else []
+
+    has_conflict = len(positive_list) > 0 and len(negative_list) > 0
 
     # Weight the signals
-    positive_weight = len(positive_signals)
-    negative_weight = len(negative_signals)
+    positive_weight = len(positive_list)
+    negative_weight = len(negative_list)
 
     # Negative signals are weighted more heavily for safety
     adjusted_negative = negative_weight * 1.5
@@ -994,17 +998,17 @@ def analyze_signals(
 ├─────────────────────────────────────────────────────────────┤
 │ ✅ POSITIVE SIGNALS:                                        │
 """
-    for signal in positive_signals[:5]:
+    for signal in positive_list[:5]:
         reasoning_panel += f"│    • {signal[:55]:55s}│\n"
-    if not positive_signals:
+    if not positive_list:
         reasoning_panel += "│    • (None detected)                                       │\n"
 
     reasoning_panel += """│                                                             │
 │ ❌ NEGATIVE SIGNALS:                                        │
 """
-    for signal in negative_signals[:5]:
+    for signal in negative_list[:5]:
         reasoning_panel += f"│    • {signal[:55]:55s}│\n"
-    if not negative_signals:
+    if not negative_list:
         reasoning_panel += "│    • (None detected)                                       │\n"
 
     if has_conflict:
@@ -1256,8 +1260,8 @@ WHEN A USER WANTS TO MAKE A PAYMENT:
 
 3. SHOWING YOUR REASONING (CRITICAL):
    After gathering all signals, use analyze_signals tool with:
-   - positive_signals: List things that suggest legitimacy (known recipient, small amount, normal purpose)
-   - negative_signals: List risk factors (unknown number, scam keywords, high amount)
+   - positive_signals: Comma-separated string of things that suggest legitimacy (e.g., "Known recipient, Small amount, Normal purpose")
+   - negative_signals: Comma-separated string of risk factors (e.g., "Unknown number, Scam keywords, High amount")
    - context: Brief description of the transaction
 
    This creates a visible reasoning panel that shows how you make decisions!

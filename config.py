@@ -2,19 +2,34 @@
 
 Supports switching between:
 - Ollama (local): Uses qwen3:14b via LiteLLM wrapper
-- Gemini (cloud): Uses gemini-1.5-flash for faster responses
+- Gemini (cloud): Uses gemini-2.5-flash for faster responses
 
 Set MODEL_PROVIDER environment variable or change DEFAULT_MODEL_PROVIDER below.
 """
 
 import os
+from pathlib import Path
+
+# Load .env file if it exists
+def load_dotenv():
+    """Load environment variables from .env file."""
+    env_path = Path(__file__).parent / ".env"
+    if env_path.exists():
+        with open(env_path) as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith("#") and "=" in line:
+                    key, value = line.split("=", 1)
+                    os.environ.setdefault(key.strip(), value.strip())
+
+load_dotenv()
 
 # =============================================================================
 # MODEL CONFIGURATION
 # =============================================================================
 
 # Options: "ollama" or "gemini"
-DEFAULT_MODEL_PROVIDER = "ollama"
+DEFAULT_MODEL_PROVIDER = "gemini"
 
 # Get from environment variable, fallback to default
 MODEL_PROVIDER = os.environ.get("DHANKAVACH_MODEL", DEFAULT_MODEL_PROVIDER).lower()
@@ -26,7 +41,7 @@ OLLAMA_CONFIG = {
 }
 
 # Gemini Configuration
-# Use gemini-2.0-flash (latest) or gemini-2.0-flash-001
+# Use gemini-2.0-flash (stable) or gemini-1.5-flash for faster responses
 GEMINI_CONFIG = {
     "model": "gemini-2.0-flash",
 }
