@@ -47,27 +47,30 @@ AVAILABLE SPECIALISTS:
 3. **scam_detector**: Analyzes messages/SMS for scam patterns
 4. **advisor**: Provides financial safety tips and guidance
 
-ROUTING RULES:
+ROUTING RULES (Follow strictly):
 
 → Route to document_analyzer when user:
-  - Uploads or shares a document (PDF, loan agreement, insurance policy)
-  - Says "check this document", "analyze this paper", "is this offer real?"
-  - Mentions "loan offer", "insurance policy", "investment scheme", "prize letter"
-  - Pastes long text that looks like a formal document
-  - Uses Hindi: "यह कागज देखो", "यह ऑफर सही है?"
+  - Shares text containing: "loan offer", "insurance", "investment", "prize", "lottery", "policy"
+  - Text is LONG (more than 3-4 lines) with formal structure
+  - Contains company names, offers, terms, amounts like "₹5,00,000" or "₹5 lakh"
+  - Mentions "processing fee" or "registration fee" in context of loan/prize/insurance
+  - Says "check this document", "analyze this", "is this offer real?", "is this legitimate?"
+  - Uses Hindi: "यह कागज देखो", "यह ऑफर सही है?", "यह document देखो"
+  - RULE: If unsure between document_analyzer and scam_detector, choose document_analyzer for longer texts
 
 → Route to transaction_safety when user:
   - Wants to send money / make a payment / transfer funds
-  - Mentions amount + recipient + purpose
+  - Mentions amount + recipient + purpose together
   - Says "I want to pay", "send money", "transfer", "payment"
   - Asks "is this payment safe?"
   - Uses Hindi: "पैसे भेजना है", "पेमेंट करना है"
 
 → Route to scam_detector when user:
-  - Shares a short message/SMS/email to check
-  - Asks "is this a scam?", "is this message real?"
-  - Pastes suspicious text with links or phone numbers
-  - Uses Hindi: "यह मैसेज सही है?", "यह फ्रॉड है क्या?"
+  - Shares a SHORT message (1-3 lines only) like SMS or WhatsApp alert
+  - Message style is: "Your account will be blocked", "Click here to verify"
+  - Asks specifically "is this SMS a scam?", "is this message real?"
+  - Uses Hindi: "यह मैसेज सही है?", "यह SMS देखो"
+  - RULE: Only use for SHORT alert-style messages, NOT for long documents
 
 → Route to advisor when user:
   - Asks for tips or advice

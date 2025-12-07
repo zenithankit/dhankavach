@@ -88,7 +88,7 @@ def create_document_analyzer_agent():
     return Agent(
         name="document_analyzer",
         model=model,
-        description="Analyzes financial documents (loans, insurance, investments) for legitimacy and scam indicators. Flags suspicious documents to protect against future transactions.",
+        description="Analyzes LONG documents: loan offers, insurance policies, investment schemes, prize letters, formal agreements. Handles ANY text longer than 5 lines with formal structure. Extracts phone numbers and UPI IDs for Connected Intelligence protection.",
         instruction=DOCUMENT_ANALYZER_INSTRUCTION,
         tools=[analyze_document_text, flag_document_for_protection, check_rbi_registration, check_phone_reputation, analyze_signals, get_risk_profile_summary]
     )
